@@ -1,4 +1,4 @@
-name: Build Vinyl Pilot VST3 for Apple Silicon
+name: Build Vinyl Pilot Universal VST3
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  macos-arm64:
+  macos-universal:
     runs-on: macos-15
     timeout-minutes: 35
     steps:
@@ -19,11 +19,21 @@ jobs:
       - name: Configure JUCE plug-in
         run: >-
           cmake -S . -B build -G Xcode
-          -DCMAKE_OSX_ARCHITECTURES=arm64
-          -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+          -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15
 
       - name: Compile VST3
         run: cmake --build build --config Release --target VinylPilot_VST3 --parallel 3
+
+      - name: Verify both Mac architectures
+        shell: bash
+        run: |
+          set -euo pipefail
+          binary="build/VinylPilot_artefacts/Release/VST3/Vinyl Pilot.vst3/Contents/MacOS/Vinyl Pilot"
+          architectures="$(lipo -archs "$binary")"
+          echo "Built architectures: $architectures"
+          [[ "$architectures" == *arm64* ]]
+          [[ "$architectures" == *x86_64* ]]
 
       - name: Package .vst3 bundle
         shell: bash
@@ -31,11 +41,11 @@ jobs:
           set -euo pipefail
           bundle="build/VinylPilot_artefacts/Release/VST3/Vinyl Pilot.vst3"
           test -d "$bundle"
-          ditto -c -k --sequesterRsrc --keepParent "$bundle" "VinylPilot_M1Pro_VST3.zip"
+          ditto -c -k --sequesterRsrc --keepParent "$bundle" "VinylPilot_Universal_VST3.zip"
 
       - name: Upload ready-to-install plug-in
         uses: actions/upload-artifact@v4
         with:
-          name: VinylPilot_M1Pro_VST3
-          path: VinylPilot_M1Pro_VST3.zip
+          name: VinylPilot_Universal_VST3
+          path: VinylPilot_Universal_VST3.zip
           if-no-files-found: error

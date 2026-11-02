@@ -30,13 +30,13 @@
 
 ### Готовая сборка через GitHub Actions
 
-В `.github/workflows/build-macos-vst3.yml` есть сборка непосредственно на
-Apple Silicon (`macos-15`): после загрузки папки `VinylPilot` в корень
+В `.github/workflows/build-macos-vst3.yml` есть универсальная сборка
+`arm64 + x86_64` на macOS (`macos-15`): после загрузки папки `VinylPilot` в корень
 GitHub-репозитория запусти workflow **Build Vinyl Pilot VST3 for Apple Silicon**
 через вкладку Actions (в корне репозитория должно лежать **содержимое** папки
 `VinylPilot`, включая скрытую `.github`). Скачай артефакт
-`VinylPilot_M1Pro_VST3`, распакуй его
-и затем распакуй `VinylPilot_M1Pro_VST3.zip`. Внутри — пакет
+`VinylPilot_Universal_VST3`, распакуй его
+и затем распакуй `VinylPilot_Universal_VST3.zip`. Внутри — пакет
 `Vinyl Pilot.vst3`, предназначенный для папки
 `~/Library/Audio/Plug-Ins/VST3/`. Для запуска Actions нужен GitHub-репозиторий.
 
